@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+    <title>tinymce 4 editor</title>
+</head>
+<body>
+
+    <script type="text/javascript"src="./jquery.js"></script>
+    <script type="text/javascript" src="./tinymce.min.js"></script>
+    <script type="text/javascript" src="./jquery.tinymce.min.js"></script>
+    <script type="text/javascript" src="./plugins/image/plugin.min.js"></script>
+    <script type="text/javascript" src="./tinymce/icons/default/icons.min.js"></script>
+<script type="text/javascript">
+let fileUpload = function (blobInfo, success, failure, progress){
+                    let xhr, formData;
+                    xhr = new XMLHttpRequest();
+                    xhr.withCredentials = false;
+                    xhr.open('POST', 'http://10.10.68.33:8101/cssmfw/attachment/doOutSaveAttachmentInfo/web/ff8080816d38b589016d38cf4af90001,ee9fbe9c41374d9c218f69569844e5b1/ff8080816d38b589016d38cf4af90001?customerId=ff8080816d38b589016d38cf4aa30000');
+                    xhr.setRequestHeader('authorization', 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJjbGllbnRUeXBlIjoid2ViIiwiY3VzdG9tZXJJZCI6ImZmODA4MDgxNmQzOGI1ODkwMTZkMzhjZjRhYTMwMDAwIiwidXNlck5hbWUiOiLpgrXmhafmlY8iLCJleHAiOjE2NDYyNzYzMTAsInVzZXJJZCI6IjhhOGFjNGExNzc2MWM5ZGEwMTc3NzExMDM4NTQxMmFmIn0.rRY9R6X1gM2klDWdy4ERutye5ywgi0BiAbm9yra38yk');
+
+                    xhr.upload.onprogress = function(e){
+                    progress(e.loaded / e.total * 100);
+                    }
+
+                    xhr.onload = function() {
+                    let json;
+                    if (xhr.status == 403) {
+                        failure('HTTP Error: ' + xhr.status, { remove: true });
+                        return;
+                    }
+                    if (xhr.status < 200 || xhr.status >= 300 ) {
+                        failure('HTTP Error: ' + xhr.status);
+                        return;
+                    }
+                    json = JSON.parse(xhr.responseText);
+                    if(json.location) success(json.location);
+                    else{
+                        failure(json.message);
+                    }
+                    };
+
+                    xhr.onerror = function () {
+                    failure('Image upload failed due to a XHR Transport error. Code: ' + xhr.status);
+                    }
+
+                    formData = new FormData();
+                    formData.append('file', blobInfo.blob(), blobInfo.filename());
+
+                    xhr.send(formData);
+                }
+    tinymce.init({
+        selector: "#txt",
+			menubar: false,
+            toolbar_mode:'floating',
+            language: "zh_CN", 
+            language_url : 'tinymce/langs/zh_CN.js',
+            // content_css:"https://lib.baomitu.com/tinymce/5.5.1/skins/content/default/content.min.css",
+            powerpaste_html_import:'prompt',
+            plugins:"code table image powerpaste fullpage",
+            // plugins全部枚举
+            // plugins: [
+            // "advlist autolink autosave link image lists charmap print preview hr anchor pagebreak spellchecker",
+            // "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
+            // "table contextmenu directionality emoticons template textcolor  fullpage textcolor codesample powerpaste"
+            // ],
+            toolbar: "undo redo bold italic underline strikethrough alignment | styleselect formatselect fontselect fontsizeselect |searchreplace | bullist numlist | outdent indent blockquote | link unlink anchor image media code codesample | inserttime preview | forecolor backcolor |table | hr removeformat ",
+             // toolbar全部枚举
+            // toolbar: "undo redo | cut copy paste | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | styleselect formatselect fontselect fontsizeselect |searchreplace | bullist numlist | outdent indent blockquote | link unlink anchor image media code codesample | inserttime preview | forecolor backcolor |table | hr removeformat | subscript superscript | charmap emoticons | print fullscreen | ltr rtl | spellchecker | visualchars visualblocks nonbreaking template pagebreak restoredraft",
+            toolbar_groups:{
+                alignment:{
+                icon:'align-left',
+                tooltip:'alignment',
+                items:"alignleft aligncenter alignright alignjustify"
+                }
+            },
+            toolbar_items_size: 'small',
+            images_upload_url:"http://10.10.68.33:8096/cssmfw/attachment/doOutSaveAttachmentInfo/web/8a8ac4a17761c9da01777110385412af,338b9d0ca93af197a8410a8a38d1e90b/8a8ac4a17761c9da01777110385412af?customerId=ff8080816d38b589016d38cf4aa30000",
+            images_upload_handler:fileUpload,
+            style_formats: [
+                {title: 'Bold text', inline: 'b'},
+                {title: 'Red text', inline: 'span', styles: {color: '#ff0000'}},
+                {title: 'Red header', block: 'h1', styles: {color: '#ff0000'}},
+                {title: 'Example 1', inline: 'span', classes: 'example1'},
+                {title: 'Example 2', inline: 'span', classes: 'example2'},
+                {title: 'Table styles'},
+                {title: 'Table row 1', selector: 'tr', classes: 'tablerow1'}
+            ],
+
+            templates: [
+                {title: 'Test template 1', content: 'Test 1'},
+                {title: 'Test template 2', content: 'Test 2'}
+            ],
+    });</script>
+
+<form method="post" action="somepage">
+    <textarea name="content" id ="txt"style="width:100%;height:800px"></textarea>
+</form>
+<button id="btn">提交</button>
+<pre id="xx"></pre>
+</body>
+        <script type="text/javascript">
+               $("#btn").click(function(){
+                 
+                   $("#xx").html(tinyMCE.activeEditor.getContent() );
+               })
+                
+        </script>
+</html>

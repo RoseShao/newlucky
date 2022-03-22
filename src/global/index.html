@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+    <title>tinymce 4 editor</title>
+</head>
+<body>
+    <div id="editor"></div>
+</body>
+</html>
+<script type="text/javascript"src="./jquery.js"></script>
+<script type="text/javascript" src="./tinymce.min.js"></script>
+<script type="text/javascript" src="./jquery.tinymce.min.js"></script>
+<script type="text/javascript" src="./plugins/image/plugin.min.js"></script>
+<script type="text/javascript" src="./tinymce/icons/default/icons.min.js"></script>
+
+<script type="text/javascript">
+    let fileUpload = function (blobInfo, success, failure, progress){
+        let xhr, formData;
+        xhr = new XMLHttpRequest();
+        xhr.withCredentials = false;
+        xhr.open('POST', options.images_upload_url);
+        if(options.hasOwnProperty('headers')){
+            for(let i = 0;i<options.headers.length;i++){
+                xhr.setRequestHeader(options.headers[i].key,options.headers[i].value);
+            }
+        }
+        xhr.upload.onprogress = function(e){
+        progress(e.loaded / e.total * 100);
+        }
+
+        xhr.onload = function() {
+        let json;
+        if (xhr.status == 403) {
+            failure('HTTP Error: ' + xhr.status, { remove: true });
+            return;
+        }
+        if (xhr.status < 200 || xhr.status >= 300 ) {
+            failure('HTTP Error: ' + xhr.status);
+            return;
+        }
+        json = JSON.parse(xhr.responseText);
+        if(json.location) success(json.location);
+        else{
+            failure(json.message);
+        }
+        };
+
+        xhr.onerror = function () {
+        failure('Image upload failed due to a XHR Transport error. Code: ' + xhr.status);
+        }
+
+        formData = new FormData();
+        formData.append('file', blobInfo.blob(), blobInfo.filename());
+
+        xhr.send(formData);
+    },options = {
+        selector: "#editor",
+        width:'100%',
+        height:'300px',
+		readonly:1,
+		mobile: {
+			menubar: false,
+            language: "zh_CN", 
+            language_url : 'tinymce/langs/zh_CN.js',//汉化包
+            plugins:"code table image powerpaste fullpage",//每增加一个插件，需要在plugins下增加插件js
+            toolbar: "undo redo bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | formatselect fontselect fontsizeselect |searchreplace | bullist numlist | outdent indent blockquote | link unlink anchor image media code codesample | inserttime preview | forecolor backcolor |table | hr removeformat ",
+            toolbar_items_size: 'small',
+            images_upload_handler:fileUpload
+        },
+    }
+    // 获取值
+    function getHtml(){
+        return tinyMCE.activeEditor.getContent();
+	}
+    //放置值
+    function setHtml(json){
+        tinyMCE.activeEditor.setContent(json);
+	}
+    //清空编辑器
+    function editorClear(){
+        tinyMCE.activeEditor.setContent('');
+	}
+    //禁用编辑器
+    function editorDisable(){
+        tinymce.activeEditor.setMode('readonly');
+	}
+	//启用编辑器
+	function editorEnable(){
+        tinymce.activeEditor.setMode('design'); 
+	}
+	//销毁编辑器
+	function editorDestroy(){
+        editorClear();
+        tinymce.activeEditor.destroy(); 
+	}
+    //带值初始化编辑器
+    function setEditor(json,settings){
+        options = Object.assign(options,settings);
+        tinymce.init(options).then(function(editors){
+            if(!!json)setHtml(json);
+        });
+    }
+</script>
+
+<script type="text/javascript">
+    let settings = {
+        images_upload_url:'http://10.10.68.33:8101/cssmfw/attachment/doOutSaveAttachmentInfo/web/ff8080816d38b589016d38cf4af90001,ee9fbe9c41374d9c218f69569844e5b1/ff8080816d38b589016d38cf4af90001?customerId=ff8080816d38b589016d38cf4aa30000',
+        headers:[{key:'authorization',value: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJjbGllbnRUeXBlIjoid2ViIiwiY3VzdG9tZXJJZCI6ImZmODA4MDgxNmQzOGI1ODkwMTZkMzhjZjRhYTMwMDAwIiwidXNlck5hbWUiOiLpgrXmhafmlY8iLCJleHAiOjE2NDYyNzYzMTAsInVzZXJJZCI6IjhhOGFjNGExNzc2MWM5ZGEwMTc3NzExMDM4NTQxMmFmIn0.rRY9R6X1gM2klDWdy4ERutye5ywgi0BiAbm9yra38yk'}],
+    }
+    let json = "<!DOCTYPE html>\n<html>\n<head>\n</head>\n<body>\n<p style=\"margin: 0cm; margin-bottom: .0001pt; line-height: 20.0pt; mso-line-height-rule: exactly;\"><strong><span style=\"font-size: 9.0pt; font-family: '微软雅黑','sans-serif'; mso-bidi-font-family: 微软雅黑;\">【内部管理】：</span></strong></p>\n<p style=\"margin: 0cm; margin-bottom: .0001pt; line-height: 20.0pt; mso-line-height-rule: exactly;\"><span lang=\"EN-US\" style=\"font-size: 9.0pt; font-family: 'Calibri','sans-serif';\">1</span><span style=\"font-size: 9.0pt; font-family: '微软雅黑','sans-serif'; mso-bidi-font-family: 微软雅黑;\">、其他：</span></p>\n<p style=\"margin: 0cm; margin-bottom: .0001pt; line-height: 20.0pt; mso-line-height-rule: exactly;\"><span style=\"font-size: 9.0pt; font-family: '微软雅黑','sans-serif'; mso-bidi-font-family: 微软雅黑;\">继续组织</span><span lang=\"EN-US\" style=\"font-size: 9.0pt; font-family: 'Calibri','sans-serif';\">2021</span><span style=\"font-size: 9.0pt; font-family: '微软雅黑','sans-serif'; mso-bidi-font-family: 微软雅黑;\">年年度总结复盘</span><span lang=\"EN-US\" style=\"font-size: 9.0pt; font-family: 'Calibri','sans-serif';\">2022</span><span style=\"font-size: 9.0pt; font-family: '微软雅黑','sans-serif'; mso-bidi-font-family: 微软雅黑;\">年计划沟通会，目标完成；<span lang=\"EN-US\">---<strong><span style=\"color: #538135;\">#</span></strong></span><strong><span style=\"color: #538135;\">已完成</span></strong></span></p>\n<p style=\"margin: 0cm; margin-bottom: .0001pt; line-height: 20.0pt; mso-line-height-rule: exactly;\"><span style=\"font-size: 9.0pt; font-family: '微软雅黑','sans-serif'; mso-bidi-font-family: 微软雅黑;\">沟通确认部门<span lang=\"EN-US\">okr</span>和<span lang=\"EN-US\">kpi</span>，明确<span lang=\"EN-US\">team</span>个人<span lang=\"EN-US\">okr</span>和<span lang=\"EN-US\">kpi</span>，目标完成；</span></p>\n<p style=\"margin: 0cm; margin-bottom: .0001pt; line-height: 20.0pt; mso-line-height-rule: exactly;\"><span style=\"font-size: 9.0pt; font-family: '微软雅黑','sans-serif'; mso-bidi-font-family: 微软雅黑;\">整理</span><span lang=\"EN-US\" style=\"font-size: 9.0pt; font-family: 'Calibri','sans-serif';\">2021</span><span style=\"font-size: 9.0pt; font-family: '微软雅黑','sans-serif'; mso-bidi-font-family: 微软雅黑;\">问题解决方案汇总，整理总结<span lang=\"EN-US\">ppt</span>，<strong><span lang=\"EN-US\" style=\"color: #c55a11;\">#</span><span style=\"color: #c55a11;\">已完成</span></strong>；</span></p>\n<p style=\"margin: 0cm; margin-bottom: .0001pt; line-height: 20.0pt; mso-line-height-rule: exactly;\"><span lang=\"EN-US\" style=\"font-size: 9.0pt; font-family: '微软雅黑','sans-serif'; mso-bidi-font-family: 微软雅黑;\">&nbsp;</span></p>\n<p style=\"margin: 0cm; margin-bottom: .0001pt; line-height: 20.0pt; mso-line-height-rule: exactly;\"><strong><span style=\"font-size: 9.0pt; font-family: '微软雅黑','sans-serif'; mso-bidi-font-family: 微软雅黑;\">【对外事宜】：</span></strong></p>\n<p style=\"margin: 0cm; margin-bottom: .0001pt; line-height: 20.0pt; mso-line-height-rule: exactly;\"><span lang=\"EN-US\" style=\"font-size: 9.0pt; font-family: 'Calibri','sans-serif';\">1</span><span style=\"font-size: 9.0pt; font-family: '微软雅黑','sans-serif'; mso-bidi-font-family: 微软雅黑;\">、其他：</span></p>\n<p style=\"margin: 0cm; margin-bottom: .0001pt; line-height: 20.0pt; mso-line-height-rule: exactly;\"><span style=\"font-size: 9.0pt; font-family: '微软雅黑','sans-serif'; mso-bidi-font-family: 微软雅黑;\">参加</span><span lang=\"EN-US\" style=\"font-size: 9.0pt; font-family: 'Calibri','sans-serif';\">2022</span><span style=\"font-size: 9.0pt; font-family: '微软雅黑','sans-serif'; mso-bidi-font-family: 微软雅黑;\">年度经理人简要经营会议，目标完成；<span lang=\"EN-US\">---<strong><span style=\"color: #538135;\">#</span></strong></span><strong><span style=\"color: #538135;\">参加并就会议内容进行内部交流沟通，调整目标计划、部门规范、总结和技术结构等多份文档，已完成</span></strong></span></p>\n<p style=\"margin: 0cm; margin-bottom: .0001pt; line-height: 20.0pt; mso-line-height-rule: exactly;\"><span style=\"font-size: 9.0pt; font-family: '微软雅黑','sans-serif'; mso-bidi-font-family: 微软雅黑;\">沟通数字大脑下周正式使用表单，<strong><span lang=\"EN-US\" style=\"color: #c55a11;\">#</span><span style=\"color: #c55a11;\">已完成沟通</span></strong>；</span></p>\n<p style=\"margin: 0cm; margin-bottom: .0001pt; line-height: 20.0pt; mso-line-height-rule: exactly;\"><span style=\"font-size: 9.0pt; font-family: '微软雅黑','sans-serif'; mso-bidi-font-family: 微软雅黑;\">参加物联平板系统目前完成情况和存在问题沟通会，<strong><span lang=\"EN-US\" style=\"color: #c55a11;\">#</span><span style=\"color: #c55a11;\">已完成沟通</span></strong>；</span></p>\n<p style=\"margin: 0cm; margin-bottom: .0001pt; line-height: 20.0pt; mso-line-height-rule: exactly;\"><span style=\"font-size: 9.0pt; font-family: '微软雅黑','sans-serif'; mso-bidi-font-family: 微软雅黑;\">参加<span lang=\"EN-US\">bgy</span>系统对接事宜沟通会，<strong><span lang=\"EN-US\" style=\"color: #c55a11;\">#</span><span style=\"color: #c55a11;\">已完成沟通</span></strong>；</span></p>\n<p style=\"margin: 0cm; margin-bottom: .0001pt; line-height: 20.0pt; mso-line-height-rule: exactly;\"><span style=\"font-size: 9.0pt; font-family: '微软雅黑','sans-serif'; mso-bidi-font-family: 微软雅黑;\">参加灌无忧和灌无忧<span lang=\"EN-US\">plus</span>对接事宜沟通会，<strong><span lang=\"EN-US\" style=\"color: #c55a11;\">#</span><span style=\"color: #c55a11;\">已完成沟通</span></strong>；</span></p>\n<p style=\"margin: 0cm; margin-bottom: .0001pt; line-height: 20.0pt; mso-line-height-rule: exactly;\"><span style=\"font-size: 9.0pt; font-family: '微软雅黑','sans-serif'; mso-bidi-font-family: 微软雅黑;\">整理<span lang=\"EN-US\">sql</span>配合数字大脑数据清理，<strong><span lang=\"EN-US\" style=\"color: #c55a11;\">#</span><span style=\"color: #c55a11;\">已完成</span></strong>；</span></p>\n</body>\n</html>"
+    setEditor(json,settings);
+    $('#btn').click(function(){
+        editorDestroy();
+    })
+    $('#btn2').click(function(){
+        setEditor(json,settings);
+    })
+</script>
