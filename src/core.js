@@ -152,7 +152,7 @@ luckysheet.create = function (setting) {
     Store.asyncLoad.push(...luckysheetConfigsetting.plugins);
 
     // Register plugins
-    initPlugins(extendsetting.plugins , extendsetting.data);
+    // initPlugins(extendsetting.plugins , extendsetting.data);
 
     // Store formula information, including internationalization
     functionlist();
@@ -201,6 +201,7 @@ function initialWorkBook(){
     zoomInitial();//zoom method initialization
     printInitial();//print initialization
     initListener();
+    initPlugins(['chart'], Store.luckysheetfile);//图表初始化放在有数据后
 }
 
 //获取所有表格数据
