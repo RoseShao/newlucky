@@ -7,6 +7,7 @@ import { luckysheet_getcelldata } from '../../function/func';
 import { getSheetIndex, getRangetxt, getvisibledatacolumn, getvisibledatarow } from '../../methods/get'
 import { rowLocation, colLocation, mouseposition } from '../../global/location'
 import { setluckysheet_scroll_status } from '../../methods/set'
+import server from '../../controllers/server'
 import {
     luckysheetMoveHighlightCell,
     luckysheetMoveHighlightCell2, 
@@ -83,6 +84,7 @@ function chart(data, isDemo) {
         chartInfo.chartparam.renderChart = chartmix.default.renderChart
         chartInfo.chartparam.getChartJson = chartmix.default.getChartJson
         chartInfo.chartparam.insertToStore = chartmix.default.insertToStore
+        chartInfo.chartparam.insertFunc = chartmix.default.insertFunc
 
         // Initialize the rendering chart
         for (let i = 0; i < data.length; i++) {
@@ -99,6 +101,17 @@ function chart(data, isDemo) {
 
         // After the chart is loaded, mark it
         arrayRemoveItem(chartInfo.asyncLoad,'chart');
+        // 插入反应方法
+    let changeChartData = function(chartOptions,updateObj){
+        let chartDataObj = {
+            chart_id: chartOptions.chart_id,
+            sheetIndex: chartInfo.currentSheetIndex,
+            chartOptions:chartOptions
+        };
+        console.log('update',chartDataObj);
+        server.saveParam("c", chartInfo.currentSheetIndex, chartDataObj, { "op": "update" });
+    }
+    chartInfo.chartparam.insertFunc(changeChartData)
 
     });
 }
@@ -121,7 +134,7 @@ function renderCharts(chartLists, isDemo) {
         let chart_id = chart.chart_id
         let chart_id_c = chart_id + '_c'
         let modelChartShowHTML =
-            '<div id="${id}"class="luckysheet-modal-dialog luckysheet-modal-dialog-chart ${addclass}"tabindex="0"role="dialog"aria-labelledby=":41e"dir="ltr"><div class="luckysheet-modal-dialog-resize"><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-lt"data-type="lt"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-mt"data-type="mt"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-lm"data-type="lm"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-rm"data-type="rm"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-rt"data-type="rt"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-lb"data-type="lb"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-mb"data-type="mb"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-rb"data-type="rb"></div></div><div class="luckysheet-modal-dialog-controll"><span class="luckysheet-modal-controll-btn luckysheet-modal-controll-update"role="button"tabindex="0"aria-label="修改图表"title="修改图表"><i class="fa fa-pencil"aria-hidden="true"></i></span><span class="luckysheet-modal-controll-btn luckysheet-modal-controll-max"role="butluckysheet_chartIns_indexton"tabindex="0"aria-label="最大化"title="最大化"><i class="fa fa-window-maximize"aria-hidden="true"></i></span><span class="luckysheet-modal-controll-btn luckysheet-modal-controll-del"role="button"tabindex="0"aria-label="删除"title="删除"><i class="fa fa-trash"aria-hidden="true"></i></span></div><div class="luckysheet-modal-dialog-content">${content}</div></div>'
+            '<div id="${id}"class="luckysheet-modal-dialog luckysheet-modal-dialog-chart ${addclass}"tabindex="0"role="dialog"aria-labelledby=":41e"dir="ltr"><div class="luckysheet-modal-dialog-resize"><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-lt"data-type="lt"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-mt"data-type="mt"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-lm"data-type="lm"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-rm"data-type="rm"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-rt"data-type="rt"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-lb"data-type="lb"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-mb"data-type="mb"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-rb"data-type="rb"></div></div><div class="luckysheet-modal-dialog-controll"><span class="luckysheet-modal-controll-btn luckysheet-modal-controll-update"role="button"tabindex="0"aria-label="修改图表"title="修改图表"><i class="fa fa-pencil"aria-hidden="true"></i></span><span class="luckysheet-modal-controll-btn luckysheet-modal-controll-del"role="button"tabindex="0"aria-label="删除"title="删除"><i class="fa fa-trash"aria-hidden="true"></i></span></div><div class="luckysheet-modal-dialog-content">${content}</div></div>'
 
         let $t = $(
             replaceHtml(modelChartShowHTML, {
@@ -223,7 +236,7 @@ function renderCharts(chartLists, isDemo) {
                         ).hide();
 
                     }
-
+                   
                     e.stopPropagation();
 
                 }
@@ -258,12 +271,12 @@ function renderCharts(chartLists, isDemo) {
                     )[0].scrollWidth;
 
                     chartInfo.chartparam.luckysheetCurrentChart = chart_id;
-
+            
                     e.stopPropagation();
 
                 }
-            })
-
+            }) 
+    
 
         let width = chart.width
         let height = chart.height
@@ -1166,7 +1179,7 @@ function createLuckyChart(width, height, left, top) {
     let chart_id_c = chart_id + '_c'
 
     let modelChartShowHTML =
-        '<div id="${id}"class="luckysheet-modal-dialog luckysheet-modal-dialog-chart ${addclass}"tabindex="0"role="dialog"aria-labelledby=":41e"dir="ltr"><div class="luckysheet-modal-dialog-resize"><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-lt"data-type="lt"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-mt"data-type="mt"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-lm"data-type="lm"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-rm"data-type="rm"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-rt"data-type="rt"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-lb"data-type="lb"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-mb"data-type="mb"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-rb"data-type="rb"></div></div><div class="luckysheet-modal-dialog-controll"><span class="luckysheet-modal-controll-btn luckysheet-modal-controll-update"role="button"tabindex="0"aria-label="修改图表"title="修改图表"><i class="fa fa-pencil"aria-hidden="true"></i></span><span class="luckysheet-modal-controll-btn luckysheet-modal-controll-max"role="butluckysheet_chartIns_indexton"tabindex="0"aria-label="最大化"title="最大化"><i class="fa fa-window-maximize"aria-hidden="true"></i></span><span class="luckysheet-modal-controll-btn luckysheet-modal-controll-del"role="button"tabindex="0"aria-label="删除"title="删除"><i class="fa fa-trash"aria-hidden="true"></i></span></div><div class="luckysheet-modal-dialog-content">${content}</div></div>'
+        '<div id="${id}"class="luckysheet-modal-dialog luckysheet-modal-dialog-chart ${addclass}"tabindex="0"role="dialog"aria-labelledby=":41e"dir="ltr"><div class="luckysheet-modal-dialog-resize"><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-lt"data-type="lt"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-mt"data-type="mt"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-lm"data-type="lm"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-rm"data-type="rm"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-rt"data-type="rt"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-lb"data-type="lb"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-mb"data-type="mb"></div><div class="luckysheet-modal-dialog-resize-item luckysheet-modal-dialog-resize-item-rb"data-type="rb"></div></div><div class="luckysheet-modal-dialog-controll"><span class="luckysheet-modal-controll-btn luckysheet-modal-controll-update"role="button"tabindex="0"aria-label="修改图表"title="修改图表"><i class="fa fa-pencil"aria-hidden="true"></i></span><span class="luckysheet-modal-controll-btn luckysheet-modal-controll-del"role="button"tabindex="0"aria-label="删除"title="删除"><i class="fa fa-trash"aria-hidden="true"></i></span></div><div class="luckysheet-modal-dialog-content">${content}</div></div>'
 
     let $t = $(
         replaceHtml(modelChartShowHTML, {
@@ -1204,14 +1217,18 @@ function createLuckyChart(width, height, left, top) {
     if (!sheetFile.chart) {
         sheetFile.chart = [];
     }
-    sheetFile.chart.push({
+    let chartDataObj = {
         chart_id,
         width,
         height,
         left,
         top,
-        sheetIndex: sheetFile.index
-    })
+        sheetIndex: sheetFile.index,
+        chartOptions:Object.assign(chart_json.chartOptions,{width,height,left,top})
+    };
+    sheetFile.chart.push(chartDataObj);
+    console.log('add',chartDataObj);
+    server.saveParam("c", chartInfo.currentSheetIndex, chartDataObj, { "op": "add" });
 
     //处理区域高亮框参数，当前页中，只有当前的图表的needRangShow为true,其他为false
     showNeedRangeShow(chart_id);
@@ -1293,7 +1310,7 @@ function createLuckyChart(width, height, left, top) {
                 ).hide();
 
             }
-
+        
             e.stopPropagation();
 
         }
@@ -1328,7 +1345,7 @@ function createLuckyChart(width, height, left, top) {
                 )[0].scrollWidth;
 
                 chartInfo.chartparam.luckysheetCurrentChart = chart_id;
-
+             
                 e.stopPropagation();
 
             }
@@ -1367,6 +1384,8 @@ function delChart(chart_id) {
     sheetFile.chart.splice(index, 1)
     // api call
     chartInfo.deleteChart(chart_id)
+    console.log('del',chart_id);
+    server.saveParam("c", chartInfo.currentSheetIndex, {chart_id}, { "op": "del" });
 }
 
 //设置某个图表的高亮区域状态为显示,处理当前页的所有图表，只取一个图表设置为显示，其他隐藏，其他页不管

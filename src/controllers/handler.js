@@ -3507,7 +3507,8 @@ export default function luckysheetHandler() {
 
                 // luckysheet.sheetmanage.saveChart({ "chart_id": chart_id, "sheetIndex": sheetIndex, "top": myTop, "left": myLeft });
                 //存储滚动条位置//协同编辑时可能影响用户操作，可以考虑不存储滚动条位置,或者滚动条信息仅仅保存到后台，但是不分发到其他设备（google sheet没有存储滚动条位置）
-                server.saveParam("c", Store.currentSheetIndex, { "left":myLeft, "top":myTop,"scrollTop": scrollTop, "scrollLeft": scrollLeft }, { "op":"xy", "cid": chart_id});
+                console.log({ "left":parseFloat(myLeft.split('px')[0]), "top":parseFloat(myTop.split('px')[0]),"scrollTop": scrollTop, "scrollLeft": scrollLeft })
+                server.saveParam("c", Store.currentSheetIndex, { "chart_id":chart_id,"left":parseFloat(myLeft.split('px')[0]), "top":parseFloat(myTop.split('px')[0]),"scrollTop": scrollTop, "scrollLeft": scrollLeft }, { "op":"xy", "cid": chart_id});
             }
         }
 
@@ -3515,7 +3516,8 @@ export default function luckysheetHandler() {
         if (!!Store.chartparam.luckysheetCurrentChartResize) {
             Store.chartparam.luckysheetCurrentChartResize = null;
             if (Store.chartparam.luckysheetInsertChartTosheetChange) {
-                var myHeight = Store.chartparam.luckysheetCurrentChartResizeObj.height(), myWidth = Store.chartparam.luckysheetCurrentChartResizeObj.width(), scrollLeft = $("#luckysheet-cell-main").scrollLeft(), scrollTop = $("#luckysheet-cell-main").scrollTop();
+                // var myHeight = Store.chartparam.luckysheetCurrentChartResizeObj.height(), myWidth = Store.chartparam.luckysheetCurrentChartResizeObj.width(), scrollLeft = $("#luckysheet-cell-main").scrollLeft(), scrollTop = $("#luckysheet-cell-main").scrollTop();
+                var myHeight = Store.chartparam.luckysheetCurrentChartResizeObj.css("height"), myWidth = Store.chartparam.luckysheetCurrentChartResizeObj.css("width"), scrollLeft = $("#luckysheet-cell-main").scrollLeft(), scrollTop = $("#luckysheet-cell-main").scrollTop();
 
                 var myTop = Store.chartparam.luckysheetCurrentChartMoveObj.css("top"),
                     myLeft = Store.chartparam.luckysheetCurrentChartMoveObj.css("left");
@@ -3533,8 +3535,8 @@ export default function luckysheetHandler() {
 
                 //加上滚动条的位置
                 // luckysheet.sheetmanage.saveChart({ "chart_id": chart_id, "sheetIndex": sheetIndex, "height": myHeight, "width": myWidth, "top": myTop, "left": myLeft, "scrollTop": scrollTop, "scrollLeft": scrollLeft });
-
-                server.saveParam("c", Store.currentSheetIndex, { "width":myWidth, "height":myHeight, "top": myTop, "left": myLeft, "scrollTop": scrollTop, "scrollLeft": scrollLeft}, { "op":"wh", "cid": chart_id});
+                console.log({ "width":parseFloat(myWidth.split('px')[0]), "height":parseFloat(myHeight.split('px')[0]), "top": parseFloat(myTop.split('px')[0]), "left": parseFloat(myLeft.split('px')[0]), "scrollTop": scrollTop, "scrollLeft": scrollLeft})
+                server.saveParam("c", Store.currentSheetIndex, {"chart_id":chart_id, "width":parseFloat(myWidth.split('px')[0]), "height":parseFloat(myHeight.split('px')[0]), "top": parseFloat(myTop.split('px')[0]), "left": parseFloat(myLeft.split('px')[0]), "scrollTop": scrollTop, "scrollLeft": scrollLeft}, { "op":"wh", "cid": chart_id});
             }
         }
 

@@ -159,9 +159,7 @@ const gridHTML = function(){
                                                                 <span class="luckysheet-modal-controll-btn luckysheet-modal-controll-crop" role="button" tabindex="0" aria-label="裁剪" title="裁剪">
                                                                     <i class="fa fa-pencil" aria-hidden="true"></i>
                                                                 </span>
-                                                                <span class="luckysheet-modal-controll-btn luckysheet-modal-controll-restore" role="button" tabindex="0" aria-label="恢复原图" title="恢复原图">
-                                                                    <i class="fa fa-window-maximize" aria-hidden="true"></i>
-                                                                </span>
+                                                             
                                                                 <span class="luckysheet-modal-controll-btn luckysheet-modal-controll-del" role="button" tabindex="0" aria-label="删除" title="删除">
                                                                     <i class="fa fa-trash" aria-hidden="true"></i>
                                                                 </span>
@@ -185,9 +183,7 @@ const gridHTML = function(){
                                                                 <span class="luckysheet-modal-controll-btn luckysheet-modal-controll-crop" role="button" tabindex="0" aria-label="裁剪" title="裁剪">
                                                                     <i class="fa fa-pencil" aria-hidden="true"></i>
                                                                 </span>
-                                                                <span class="luckysheet-modal-controll-btn luckysheet-modal-controll-restore" role="button" tabindex="0" aria-label="恢复原图" title="恢复原图">
-                                                                    <i class="fa fa-window-maximize" aria-hidden="true"></i>
-                                                                </span>
+                                                              
                                                                 <span class="luckysheet-modal-controll-btn luckysheet-modal-controll-del" role="button" tabindex="0" aria-label="删除" title="删除">
                                                                     <i class="fa fa-trash" aria-hidden="true"></i>
                                                                 </span>
